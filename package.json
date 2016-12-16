@@ -1,0 +1,15 @@
+{
+  "name": "sequencer",
+  "version": "1.0.0",
+  "description": "Out-of-order request/response layer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mark K Cowan",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "eventemitter": "github:battlesnake/eventemitter",
+    "lodash": "^4.17.2"
+  }
+}
