@@ -20,9 +20,14 @@ function Sequencer(opts) {
 	let _seq = initialValue;
 	const map = new Map();
 
-	this.request = data => new Promise((resolve, reject) => {
+	this.next = () => {
 		const seq = _seq++;
 		_seq = _seq % (1 << 28);
+		return seq;
+	};
+
+	this.request = data => new Promise((resolve, reject) => {
+		const seq = this.next();
 		const msg = {};
 		if (dataField === null) {
 			_.assign(msg, data);
@@ -34,9 +39,9 @@ function Sequencer(opts) {
 			clearTimeout(timer);
 			map.delete(seq);
 			if (success) {
-				resolve(result);
+				return resolve(result);
 			} else {
-				reject(result);
+				return reject(result);
 			}
 		};
 		map.set(seq, doCompleted);
@@ -53,6 +58,7 @@ function Sequencer(opts) {
 		const field = success ? resultField : errorField;
 		const result = field === null ? data : _.get(data, field);
 		cb(success, result);
+		return true;
 	};
 
 	this.resolve = data => this.complete(true, data);
@@ -61,7 +67,7 @@ function Sequencer(opts) {
 	this.clear = () => {
 		const deferreds = [...map.values()];
 		map.clear();
-		for (let deferred of deferreds) {
+		for (const deferred of deferreds) {
 			deferred(false, null);
 		}
 	};
